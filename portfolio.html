@@ -1,1 +1,198 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Pixel Loading 4s + Click Zoom Stop Rotation</title>
+<style>
+  body { margin: 0; overflow: hidden; background: #222; font-family: 'Press Start 2P', monospace; }
+
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  #loading {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: #222222;
+    color: #00ff00;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1em;
+    z-index: 10;
+    text-align: center;
+  }
+
+  .pixel-block {
+    width: 16px;
+    height: 16px;
+    background: #00ff00;
+    margin: 2px;
+    animation: blink 1s infinite;
+  }
+
+  @keyframes blink {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0.2; }
+  }
+
+  .pixel-row {
+    display: flex;
+  }
+</style>
+</head>
+<body>
+
+<div id="loading">
+  <div>LOADING</div>
+  <div id="pixel-loader" class="pixel-row">
+    <div class="pixel-block"></div>
+    <div class="pixel-block"></div>
+    <div class="pixel-block"></div>
+    <div class="pixel-block"></div>
+    <div class="pixel-block"></div>
+  </div>
+  <div id="percent">0%</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+<script>
+// --- Scene & Renderer ---
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x222222);
+
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// --- Camera & Controls ---
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+camera.position.set(20, 10, 0); 
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enablePan = false;
+controls.enableZoom = false;
+controls.enableRotate = false;
+
+// --- Lights ---
+const ambient = new THREE.AmbientLight(0x808080);
+scene.add(ambient);
+const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+dirLight.position.set(10, 20, 10);
+scene.add(dirLight);
+
+// --- Ground Plane ---
+const groundGeo = new THREE.PlaneGeometry(10,10);
+const groundMat = new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 1, metalness: 0 });
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI/2;
+scene.add(ground);
+
+// --- Load GLB Model ---
+let model;
+const loader = new THREE.GLTFLoader();
+loader.load(
+  'https://raw.githubusercontent.com/Dechachai05/Portfolio/main/old_computers.glb',
+  function (gltf) {
+    model = gltf.scene;
+    model.position.set(0, 0, 0);
+    model.scale.set(1, 1, 1);
+    scene.add(model);
+  },
+  function (xhr) {
+    const percent = Math.round((xhr.loaded / xhr.total) * 100);
+    document.getElementById('percent').innerText = `${percent}%`;
+  },
+  function (error) {
+    console.error(error);
+    document.getElementById('loading').innerText = 'Error loading model!';
+  }
+);
+
+// --- Raycaster & Mouse ---
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let targetScreen = null;
+let userClicked = false;
+
+// Click event
+window.addEventListener('click', (event) => {
+  mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+  mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+
+  if(model){
+    const intersects = raycaster.intersectObject(model, true);
+    if(intersects.length > 0){
+      targetScreen = intersects[0].point.clone();
+      userClicked = true; // stop rotation
+      console.log("Target screen clicked:", targetScreen);
+    }
+  }
+});
+
+// --- Camera Animation ---
+let startRadius = 20;
+let endRadius = 8;
+let radius = startRadius;
+let angle = 0;
+let zooming = false;
+let elapsed = 0;
+const loadingTime = 4; // 4 seconds
+let lastTime = performance.now();
+
+function animate(now){
+  requestAnimationFrame(animate);
+
+  if(!now) now = performance.now();
+  const deltaTime = (now - lastTime)/1000;
+  lastTime = now;
+  elapsed += deltaTime;
+
+  if(elapsed >= loadingTime && !zooming){
+    zooming = true;
+    document.getElementById('loading').style.display = 'none';
+  }
+
+  let lookAtPos = new THREE.Vector3(0,0,0);
+  if(userClicked && targetScreen){
+    lookAtPos = targetScreen;
+  }
+
+  if(zooming){
+    radius += (endRadius - radius) * 0.05;
+    if(!userClicked) angle += 0.005;
+
+    camera.position.x = radius * Math.cos(angle) + lookAtPos.x;
+    camera.position.z = radius * Math.sin(angle) + lookAtPos.z;
+    camera.position.y = 8;
+    camera.lookAt(lookAtPos);
+  } else {
+    angle += 0.01;
+    camera.position.x = radius * Math.cos(angle);
+    camera.position.z = radius * Math.sin(angle);
+    camera.position.y = 10;
+    camera.lookAt(0,0,0);
+  }
+
+  if(model && !userClicked) model.rotation.y += 0.002;
+
+  renderer.render(scene, camera);
+}
+
+animate(performance.now());
+
+// --- Resize ---
+window.addEventListener('resize', ()=>{
+  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
+</body>
+</html>
 
