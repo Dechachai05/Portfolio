@@ -149,7 +149,7 @@ gltfLoader.load('https://raw.githubusercontent.com/Dechachai05/Portfolio/main/my
 
 gltfLoader.load('https://raw.githubusercontent.com/Dechachai05/Portfolio/main/skill1.glb', (gltf) => {
   const skillModel = gltf.scene;
-  skillModel.scale.set(0.2, 0.2, 0.2);
+  skillModel.scale.set(0.2, 0.2, -0.2); // flip Z if needed
   skillModel.position.set(targetDistance, 0.5, -targetDistance);
   skillModel.name = "skill";
   scene.add(skillModel);
@@ -185,7 +185,7 @@ const vert = `
   void main(){
     vNormal = normalize(mat3(modelMatrix) * normal);
     vec3 pos = position;
-    pos.z += sin(uTime + pos.x*2.0) * 0.1; // ขยับขึ้นลง
+    pos.z += sin(uTime + pos.x*2.0) * 0.1;
     vPosW = (modelMatrix * vec4(pos, 1.0)).xyz;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
   }
@@ -209,7 +209,7 @@ const frag = `
     specular = smoothstep(0.45,0.55,specular);
     specular *= diffuse;
 
-    vec3 base = vec3(1.0, 1.0, 0.0); // สีเหลือง
+    vec3 base = vec3(1.0, 1.0, 0.0);
     vec3 color = (base * diffuse) + vec3(specular);
 
     gl_FragColor = vec4(color, 1.0);
@@ -224,6 +224,21 @@ cellMesh.name = "Torus Cell Shader";
 scene.add(cellMesh);
 pickableObjects.push(cellMesh);
 
+// === Sphere PBR สำหรับ Project ===
+const sphereGeo = new THREE.SphereBufferGeometry(0.6, 64, 64);
+const sphereMat = new THREE.MeshStandardMaterial({
+  color: 0xffffff,
+  metalness: 0.7,
+  roughness: 0.2
+});
+const pbrSphere = new THREE.Mesh(sphereGeo, sphereMat);
+pbrSphere.position.set(-targetDistance + 2, 1, targetDistance); // ข้างๆ Torus
+pbrSphere.name = "Project Sphere";
+pbrSphere.castShadow = true;
+pbrSphere.receiveShadow = true;
+scene.add(pbrSphere);
+pickableObjects.push(pbrSphere);
+
 // === Camera Presets ===
 const LERP = 0.08;
 const targetCamPos = new THREE.Vector3().copy(camera.position);
@@ -233,8 +248,7 @@ const presets = {
   "About Me": [new THREE.Vector3(-targetDistance + 0.5, 0.8, -targetDistance + 4.0), new THREE.Vector3(-targetDistance, 0.2, -targetDistance)],
   "skill": [new THREE.Vector3(targetDistance + 3, 1.5, -targetDistance + 5), new THREE.Vector3(targetDistance, 1, -targetDistance)],
   "Project": [new THREE.Vector3(-targetDistance + 3, 1.5, targetDistance + 5), new THREE.Vector3(-targetDistance, 1, targetDistance)],
-  "Contact": [new THREE.Vector3(targetDistance + 1.0, 1.0, targetDistance + 2.0), new THREE.Vector3(targetDistance, 0.5, targetDistance)],
-  "Torus Cell Shader": [new THREE.Vector3(-targetDistance + 3, 1.5, targetDistance + 5), new THREE.Vector3(-targetDistance, 1, targetDistance)]
+  "Contact": [new THREE.Vector3(targetDistance + 1.0, 1.0, targetDistance + 2.0), new THREE.Vector3(targetDistance, 0.5, targetDistance)]
 };
 
 function setCamTarget(name) {
@@ -284,7 +298,7 @@ const clock = new THREE.Clock();
     Math.sin(t * 0.7)
   ).normalize();
 
-  // หมุน torus
+  // หมุน Torus
   cellMesh.rotation.y += 0.01;
   cellMesh.rotation.x += 0.005;
 
@@ -307,4 +321,3 @@ labelDiv.innerText = "About Me";
 </script>
 </body>
 </html>
-    
