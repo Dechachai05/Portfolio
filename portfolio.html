@@ -5,63 +5,63 @@
     <title>3D Portfolio Stage - Close-up with 3D Background</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-        /* สไตล์พื้นฐาน */
-        html, body { height: 100%; margin: 0; overflow: hidden; }
-        canvas { display: block; }
-        
-        /* 1. Navigation Bar (ปุ่มเมนู) - สไตล์ Modern */
-        #navbar {
-            position: absolute;
-            top: 25px;
-            width: 100%;
-            text-align: center;
-            z-index: 100;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            background-color: rgba(0, 0, 0, 0.4); 
-            padding: 15px 0;
-        }
-        #navbar button {
-            background: linear-gradient(145deg, #007bff, #0056b3); 
-            color: white;
-            font-family: 'Arial', sans-serif;
-            font-weight: bold;
-            font-size: 16px;
-            border: none;
-            padding: 12px 25px;
-            margin: 0 8px;
-            cursor: pointer;
-            border-radius: 30px; 
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); 
-            transition: all 0.3s ease-in-out; 
-        }
-        #navbar button:hover {
-            background: linear-gradient(145deg, #0056b3, #007bff); 
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4); 
-            transform: translateY(-2px); 
-        }
-        #navbar button:active {
-            transform: translateY(0); 
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-    </style>
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    canvas { display: block; }
+
+    #navbar {
+        position: absolute;
+        top: 25px;
+        left: 25px;           /* ย้ายไปด้านซ้าย */
+        text-align: left;      /* จัดข้อความทางซ้าย */
+        z-index: 100;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    #navbar button {
+        background: linear-gradient(145deg, #007bff, #0056b3);
+        color: white;
+        font-family: 'Arial', sans-serif;
+        font-weight: bold;
+        font-size: 16px;
+        border: none;
+        padding: 12px 25px;
+        margin: 5px 0;         /* จัดปุ่มเป็นแนวตั้ง */
+        cursor: pointer;
+        border-radius: 30px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s ease-in-out;
+        display: block;        /* ทำให้ปุ่มเรียงลงแนวตั้ง */
+    }
+
+    #navbar button:hover {
+        background: linear-gradient(145deg, #0056b3, #007bff);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+        transform: translateY(-2px);
+    }
+
+    #navbar button:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+</style>
+
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 </head>
 <body>
 
+    <!-- ✅ ปุ่มแรกเปลี่ยนชื่อเป็น Me -->
     <div id="navbar">
-        <button data-target="1">เกี่ยวกับฉัน</button>
+        <button data-target="1">About Me</button>
         <button data-target="2">ทักษะ</button>
         <button data-target="3">ผลงาน</button>
-        <button data-target="4">ติดต่อ</button>
+        <button data-target="4">Contact</button>
     </div>
-    
+
     <script>
-        // --- 1. Scene / Camera / Renderer Setup ---
         const scene = new THREE.Scene();
-        
         const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 100);
         camera.position.set(0, 1.2, 3);
 
@@ -75,88 +75,82 @@
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
 
-        // --- 2. Lights (PBR Lighting) ---
-        const hemi = new THREE.HemisphereLight(0xffffff, 0x111111, 0.5); 
+        // Lights
+        const hemi = new THREE.HemisphereLight(0xffffff, 0x111111, 0.5);
         scene.add(hemi);
-
         const dir = new THREE.DirectionalLight(0xffffff, 1.5);
         dir.position.set(5, 10, 5);
         dir.castShadow = true;
         scene.add(dir);
 
-        // --- 3. Ground (ฐานสีดำสะท้อน) ---
+        // Ground
         const ground = new THREE.Mesh(
             new THREE.PlaneBufferGeometry(50, 50),
-            new THREE.MeshStandardMaterial({ 
-                color: 0x000000, // ฐานสีดำสนิท
-                roughness: 0.15, 
-                metalness: 0.8  
-            })
+            new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.15, metalness: 0.8 })
         );
         ground.rotation.x = -Math.PI / 2;
         ground.receiveShadow = true;
         scene.add(ground);
 
-        // --- 4. Environment Map (พื้นหลัง 3D) ---
+        // Environment map
         const ENV_MAP_URL = 'https://raw.githubusercontent.com/Dechachai05/Portfolio/main/dikhololo_night_2k.jpg';
         let envMap;
-
         new THREE.TextureLoader().load(ENV_MAP_URL, tex => {
             tex.mapping = THREE.EquirectangularReflectionMapping;
-            scene.background = tex; 
-            scene.environment = tex; 
+            scene.background = tex;
+            scene.environment = tex;
+            envMap = tex;
         });
-        
-        // --- 5. GLTF Loader และ Model Setup ---
+
         const gltfLoader = new THREE.GLTFLoader();
-        // **URL โมเดลชื่อใหม่ของคุณ**
-        const MY_NAME_MODEL_URL = 'https://raw.githubusercontent.com/Dechachai05/Portfolio/main/myname1.glb';
         const targetDistance = 10;
 
+        // ✅ โมเดลที่ 1 (myname1.glb)
         gltfLoader.load(
-            MY_NAME_MODEL_URL,
+            'https://raw.githubusercontent.com/Dechachai05/Portfolio/main/myname1.glb',
             (gltf) => {
-                const myNameModel = gltf.scene || gltf.scenes[0];
-                myNameModel.traverse((node) => {
+                const model = gltf.scene;
+                model.traverse(node => {
                     if (node.isMesh) {
                         node.castShadow = true;
                         node.receiveShadow = true;
-                        if (node.material && (node.material.isMeshStandardMaterial || node.material.isMeshPhysicalMaterial)) {
-                            node.material.envMap = envMap;
-                            node.material.envMapIntensity = 1.5; 
-                            node.material.metalness = 0.9; 
-                            node.material.roughness = 0.2; 
-                            node.material.needsUpdate = true;
-                        }
                     }
                 });
-
-                myNameModel.scale.set(0.15, 0.15, 0.15); 
-                myNameModel.position.set(-targetDistance, 0.5, -targetDistance); 
-                
-                scene.add(myNameModel);
+                model.scale.set(0.15, 0.15, 0.15);
+                model.position.set(-targetDistance, 0.5, -targetDistance);
+                scene.add(model);
             },
             undefined,
-            (error) => {
-                console.error('Error loading myname1.glb:', error);
-            }
+            (err) => console.error('Error loading myname1.glb:', err)
         );
 
-        // 5.2. สร้างสี่เหลี่ยมเป้าหมายสำหรับมุมอื่นๆ (2, 3, 4)
+        // ✅ โมเดล aboutme_999.glb ไปสี่เหลี่ยมที่ 4
+        gltfLoader.load(
+            'https://raw.githubusercontent.com/Dechachai05/Portfolio/main/contact.glb',
+            (gltf) => {
+                const model4 = gltf.scene;
+                model4.scale.set(0.15, 0.15, 0.15);
+                model4.position.set(targetDistance, 0.5, targetDistance);
+                scene.add(model4);
+            },
+            undefined,
+            (err) => console.error('Error loading aboutme111.glb:', err)
+        );
+
+        // ✅ สร้างกล่องเฉพาะ 2 และ 3 (ลบอันของ about me ออกแล้ว)
         const boxSize = 2;
         const boxGeometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
-        const boxMaterial = new THREE.MeshStandardMaterial({ 
-            color: 0x444444, 
-            transparent: true, 
+        const boxMaterial = new THREE.MeshStandardMaterial({
+            color: 0x444444,
+            transparent: true,
             opacity: 0.8,
             metalness: 0.8,
             roughness: 0.3
         });
-        
+
         const boxPositions = [
             { id: '2', x: targetDistance, z: -targetDistance },
             { id: '3', x: -targetDistance, z: targetDistance },
-            { id: '4', x: targetDistance, z: targetDistance }
         ];
 
         boxPositions.forEach(pos => {
@@ -165,20 +159,16 @@
             scene.add(box);
         });
 
-        // --- 6. LERP Camera Logic ---
-        const LERP_FACTOR = 0.08; 
+        // Camera presets
+        const LERP_FACTOR = 0.08;
         const targetCameraPosition = new THREE.Vector3().copy(camera.position);
-        const targetControlsTarget = new THREE.Vector3().copy(controls.target); 
+        const targetControlsTarget = new THREE.Vector3().copy(controls.target);
 
-        // ตำแหน่ง Close-up สำหรับมุม '1'
         const cameraPresets = {
-            '1': [
-                new THREE.Vector3(-targetDistance + 0.5, 0.8, -targetDistance + 4.0), 
-                new THREE.Vector3(-targetDistance, 0.2, -targetDistance) 
-            ], 
-            '2': [new THREE.Vector3(targetDistance + 3, 1.5, -targetDistance + 5), new THREE.Vector3(targetDistance, 1, -targetDistance)],   
-            '3': [new THREE.Vector3(-targetDistance + 3, 1.5, targetDistance + 5), new THREE.Vector3(-targetDistance, 1, targetDistance)], 
-            '4': [new THREE.Vector3(targetDistance + 3, 1.5, targetDistance + 5), new THREE.Vector3(targetDistance, 1, targetDistance)]
+            '1': [new THREE.Vector3(-targetDistance + 0.5, 0.8, -targetDistance + 4.0), new THREE.Vector3(-targetDistance, 0.2, -targetDistance)],
+            '2': [new THREE.Vector3(targetDistance + 3, 1.5, -targetDistance + 5), new THREE.Vector3(targetDistance, 1, -targetDistance)],
+            '3': [new THREE.Vector3(-targetDistance + 3, 1.5, targetDistance + 5), new THREE.Vector3(-targetDistance, 1, targetDistance)],
+            '4': [new THREE.Vector3(targetDistance + 1.0, 1.0, targetDistance + 2.0), new THREE.Vector3(targetDistance, 0.5, targetDistance)]
         };
 
         function setCameraTarget(id) {
@@ -187,39 +177,32 @@
                 targetControlsTarget.copy(cameraPresets[id][1]);
             }
         }
-        
-        // --- 7. Animation Loop ---
-        const clock = new THREE.Clock();
-        let mixer = null;
 
+        // Loop
+        const clock = new THREE.Clock();
         (function loop() {
             const delta = clock.getDelta();
-            if (mixer) mixer.update(delta);
-
             camera.position.lerp(targetCameraPosition, LERP_FACTOR);
             controls.target.lerp(targetControlsTarget, LERP_FACTOR);
-            
             controls.update();
             renderer.render(scene, camera);
             requestAnimationFrame(loop);
         })();
-        
-        // --- 8. Event Listeners ---
+
+        // Events
         document.getElementById('navbar').addEventListener('click', (event) => {
             const targetId = event.target.dataset.target;
-            if (targetId) {
-                setCameraTarget(targetId);
-            }
+            if (targetId) setCameraTarget(targetId);
         });
 
-        addEventListener('resize', ()=>{
-            camera.aspect = innerWidth/innerHeight;
+        addEventListener('resize', () => {
+            camera.aspect = innerWidth / innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(innerWidth, innerHeight);
         });
 
-        // ตั้งค่าเริ่มต้นของกล้องไปยังมุม 1 (โมเดลชื่อคุณ)
+        // เริ่มที่มุม 1
         setCameraTarget('1');
     </script>
 </body>
-</html> 
+</html>
