@@ -2,79 +2,74 @@
 <html lang="th">
 <head>
 <meta charset="utf-8" />
-<title>3D Portfolio Stage - Hulk Dancing in Skills</title>
+<title>Dechachai Portfolio</title>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <style>
-    html, body { height: 100%; margin: 0; overflow: hidden; }
-    canvas { display: block; }
+  html, body { height: 100%; margin: 0; overflow: hidden; }
+  canvas { display: block; }
 
-    #navbar {
-        position: absolute;
-        top: 25px;
-        left: 25px;
-        text-align: left;
-        z-index: 100;
-        padding: 15px;
-        border-radius: 10px;
-        background-color: rgba(0,0,0,0.6);
-    }
+  #navbar {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    text-align: left;
+    z-index: 100;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: rgba(0,0,0,0.6);
+  }
 
-    #navbar button {
-        background: linear-gradient(145deg, #007bff, #0056b3);
-        color: white;
-        font-family: 'Arial', sans-serif;
-        font-weight: bold;
-        font-size: 16px;
-        border: none;
-        padding: 12px 25px;
-        margin: 5px 0;
-        cursor: pointer;
-        border-radius: 30px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        transition: all 0.3s ease-in-out;
-        display: block;
-    }
+  #navbar button {
+    background: linear-gradient(145deg, #007bff, #0056b3);
+    color: white;
+    font-family: 'Arial', sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    border: none;
+    padding: 12px 25px;
+    margin: 5px 0;
+    cursor: pointer;
+    border-radius: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
+    display: block;
+  }
 
-    #navbar button:hover {
-        background: linear-gradient(145deg, #0056b3, #007bff);
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
-        transform: translateY(-2px);
-    }
+  #navbar button:hover {
+    background: linear-gradient(145deg, #0056b3, #007bff);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+  }
 
-    #navbar button:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    }
+  #label {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 0 0 10px black;
+    z-index: 100;
+  }
 
-    #label {
-        position: absolute;
-        bottom: 25px;
-        left: 50%;
-        transform: translateX(-50%);
-        color: white;
-        font-size: 24px;
-        font-weight: bold;
-        text-shadow: 0 0 10px black;
-        z-index: 100;
-    }
+  #tip {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ffd700;
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 0 0 10px black;
+    animation: pulseTip 2s infinite;
+    z-index: 100;
+  }
 
-    #tip {
-        position: absolute;
-        top: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        color: #ffd700;
-        font-size: 20px;
-        font-weight: bold;
-        text-shadow: 0 0 10px black;
-        animation: pulseTip 2s infinite;
-        z-index: 100;
-    }
-
-    @keyframes pulseTip {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
-    }
+  @keyframes pulseTip {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
@@ -84,10 +79,10 @@
 <body>
 
 <div id="navbar">
-    <button data-target="1">About Me</button>
-    <button data-target="2">ทักษะ</button>
-    <button data-target="3">ผลงาน</button>
-    <button data-target="4">Contact</button>
+  <button data-target="1">About Me</button>
+  <button data-target="2">Skill</button>
+  <button data-target="3">Project</button>
+  <button data-target="4">Contact</button>
 </div>
 
 <div id="tip">💡 คลิกวัตถุเพื่อดูรายละเอียด!</div>
@@ -108,7 +103,7 @@ const controls = new THREE.OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 
-// Lights
+// Light
 const hemi = new THREE.HemisphereLight(0xffffff, 0x111111, 0.5);
 scene.add(hemi);
 const dir = new THREE.DirectionalLight(0xffffff, 1.5);
@@ -118,182 +113,198 @@ scene.add(dir);
 
 // Ground
 const ground = new THREE.Mesh(
-    new THREE.PlaneBufferGeometry(50, 50),
-    new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.15, metalness: 0.8 })
+  new THREE.PlaneBufferGeometry(50, 50),
+  new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.15, metalness: 0.8 })
 );
 ground.rotation.x = -Math.PI / 2;
 ground.receiveShadow = true;
 scene.add(ground);
 
-// Environment map
-const ENV_MAP_URL = 'https://raw.githubusercontent.com/Dechachai05/Portfolio/main/dikhololo_night_2k.jpg';
-new THREE.TextureLoader().load(ENV_MAP_URL, tex => {
+// Environment
+new THREE.TextureLoader().load(
+  'https://raw.githubusercontent.com/Dechachai05/Portfolio/main/dikhololo_night_2k.jpg',
+  tex => {
     tex.mapping = THREE.EquirectangularReflectionMapping;
     scene.background = tex;
     scene.environment = tex;
-});
+  }
+);
 
 const gltfLoader = new THREE.GLTFLoader();
 const targetDistance = 10;
 const pickableObjects = [];
 let selectedObject = null;
+let mixerSkill = null;
 const labelDiv = document.getElementById("label");
 
-// Animation mixer สำหรับ Skill
-let mixerSkill = null;
-
-// โมเดล About Me
-gltfLoader.load(
-    'https://raw.githubusercontent.com/Dechachai05/Portfolio/main/myname1.glb',
-    (gltf) => {
-        const model = gltf.scene;
-        model.traverse(node => { if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; } });
-        model.scale.set(0.15, 0.15, 0.15);
-        model.position.set(-targetDistance, 0.5, -targetDistance);
-        model.name = "About Me";
-        scene.add(model);
-        pickableObjects.push(model);
-    }
-);
-
-// โมเดล Skills (Hulk เต้น)
-gltfLoader.load(
-    'https://raw.githubusercontent.com/Dechachai05/Portfolio/main/skill1.glb',
-    (gltf) => {
-        const skillModel = gltf.scene;
-        skillModel.traverse(node => { if(node.isMesh){ node.castShadow=true; node.receiveShadow=true; } });
-        skillModel.scale.set(0.2, 0.2, 0.2);
-        skillModel.position.set(targetDistance, 0.5, -targetDistance);
-        skillModel.name = "ทักษะ";
-        scene.add(skillModel);
-        pickableObjects.push(skillModel);
-
-        // เล่น Animation ถ้ามี
-        if (gltf.animations && gltf.animations.length > 0) {
-            mixerSkill = new THREE.AnimationMixer(skillModel);
-            const danceAction = mixerSkill.clipAction(gltf.animations[0]);
-            danceAction.play();
-        }
-    }
-);
-
-// โมเดล Contact
-gltfLoader.load(
-    'https://raw.githubusercontent.com/Dechachai05/Portfolio/main/contact.glb',
-    (gltf) => {
-        const model4 = gltf.scene;
-        model4.scale.set(0.15, 0.15, 0.15);
-        model4.position.set(targetDistance, 0.5, targetDistance);
-        model4.name = "Contact";
-        scene.add(model4);
-        pickableObjects.push(model4);
-    }
-);
-
-// กล่อง Portfolio
-const boxSize = 2;
-const boxGeometry = new THREE.BoxGeometry(boxSize, boxSize, boxSize);
-const portfolioBox = new THREE.Mesh(
-    boxGeometry,
-    new THREE.MeshStandardMaterial({ color: 0x444444, metalness: 0.8, roughness: 0.3, emissive: 0x000000, emissiveIntensity: 0.5 })
-);
-portfolioBox.position.set(-targetDistance, 1, targetDistance);
-portfolioBox.name = "ผลงาน";
-scene.add(portfolioBox);
-pickableObjects.push(portfolioBox);
-
-// Camera presets
-const LERP_FACTOR = 0.08;
-const targetCameraPosition = new THREE.Vector3().copy(camera.position);
-const targetControlsTarget = new THREE.Vector3().copy(controls.target);
-
-const cameraPresetsByName = {
-    "About Me": [new THREE.Vector3(-targetDistance + 0.5, 0.8, -targetDistance + 4.0), new THREE.Vector3(-targetDistance, 0.2, -targetDistance)],
-    "ทักษะ": [new THREE.Vector3(targetDistance + 3, 1.5, -targetDistance + 5), new THREE.Vector3(targetDistance, 1, -targetDistance)],
-    "ผลงาน": [new THREE.Vector3(-targetDistance + 3, 1.5, targetDistance + 5), new THREE.Vector3(-targetDistance, 1, targetDistance)],
-    "Contact": [new THREE.Vector3(targetDistance + 1.0, 1.0, targetDistance + 2.0), new THREE.Vector3(targetDistance, 0.5, targetDistance)]
-};
-
-function setCameraTargetByName(name) {
-    if (cameraPresetsByName[name]) {
-        targetCameraPosition.copy(cameraPresetsByName[name][0]);
-        targetControlsTarget.copy(cameraPresetsByName[name][1]);
-    }
-}
-
-// Mouse click + picking + glow + label
-function onMouseClick(event) {
-    const mouse = new THREE.Vector2(
-        (event.clientX / window.innerWidth) * 2 - 1,
-        -(event.clientY / window.innerHeight) * 2 + 1
-    );
-    const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(pickableObjects, true);
-    if (intersects.length > 0) {
-        const obj = intersects[0].object;
-        const objName = obj.name;
-
-        // รีเซ็ตวัตถุเก่า
-        if (selectedObject && selectedObject.material) {
-            selectedObject.material.color.setHex(selectedObject.originalColor);
-            selectedObject.material.emissive.setHex(0x000000);
-        }
-
-        // บันทึกสีเดิม
-        if (!obj.originalColor && obj.material) obj.originalColor = obj.material.color.getHex();
-
-        // Highlight
-        if (obj.material) {
-            obj.material.color.set(0xffaa00);
-            obj.material.emissive.set(0xffaa00);
-        }
-
-        selectedObject = obj;
-        labelDiv.innerText = objName;
-        setCameraTargetByName(objName);
-    }
-}
-window.addEventListener('click', onMouseClick);
-
-// Navbar click
-document.getElementById('navbar').addEventListener('click', (event) => {
-    const targetId = event.target.dataset.target;
-    if (targetId) {
-        const mapping = { "1":"About Me","2":"ทักษะ","3":"ผลงาน","4":"Contact" };
-        setCameraTargetByName(mapping[targetId]);
-        labelDiv.innerText = mapping[targetId];
-    }
+// === โหลดโมเดล ===
+gltfLoader.load('https://raw.githubusercontent.com/Dechachai05/Portfolio/main/myname1.glb', (gltf) => {
+  const model = gltf.scene;
+  model.scale.set(0.15, 0.15, 0.15);
+  model.position.set(-targetDistance, 0.5, -targetDistance);
+  model.name = "About Me";
+  scene.add(model);
+  pickableObjects.push(model);
 });
 
-// Loop + Animation + Glow pulse
+gltfLoader.load('https://raw.githubusercontent.com/Dechachai05/Portfolio/main/skill1.glb', (gltf) => {
+  const skillModel = gltf.scene;
+  skillModel.scale.set(0.2, 0.2, 0.2);
+  skillModel.position.set(targetDistance, 0.5, -targetDistance);
+  skillModel.name = "skill";
+  scene.add(skillModel);
+  pickableObjects.push(skillModel);
+
+  if (gltf.animations.length > 0) {
+    mixerSkill = new THREE.AnimationMixer(skillModel);
+    const danceAction = mixerSkill.clipAction(gltf.animations[0]);
+    danceAction.play();
+  }
+});
+
+gltfLoader.load('https://raw.githubusercontent.com/Dechachai05/Portfolio/main/contact.glb', (gltf) => {
+  const model4 = gltf.scene;
+  model4.scale.set(0.15, 0.15, 0.15);
+  model4.position.set(targetDistance, 0.5, targetDistance);
+  model4.name = "Contact";
+  scene.add(model4);
+  pickableObjects.push(model4);
+});
+
+// === Torus Cell Shader สีเหลือง ===
+const uniforms = {
+  uTime: { value: 0.0 },
+  uLightDir: { value: new THREE.Vector3(0.4,1.0,0.8).normalize() }
+};
+
+const vert = `
+  uniform float uTime;
+  varying vec3 vNormal;
+  varying vec3 vPosW;
+
+  void main(){
+    vNormal = normalize(mat3(modelMatrix) * normal);
+    vec3 pos = position;
+    pos.z += sin(uTime + pos.x*2.0) * 0.1; // ขยับขึ้นลง
+    vPosW = (modelMatrix * vec4(pos, 1.0)).xyz;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+  }
+`;
+
+const frag = `
+  precision mediump float;
+  varying vec3 vNormal;
+  uniform vec3 uLightDir;
+  varying vec3 vPosW;
+
+  void main()
+  {
+    float diffuse = max(dot(vNormal, uLightDir), 0.0);
+    float levels = 4.0;
+    diffuse = floor(diffuse * levels) / levels;
+
+    vec3 R = reflect(-uLightDir, vNormal);
+    vec3 V = normalize(cameraPosition - vPosW);
+    float specular = clamp(pow(dot(R,V), 4.0),0.0,1.0);
+    specular = smoothstep(0.45,0.55,specular);
+    specular *= diffuse;
+
+    vec3 base = vec3(1.0, 1.0, 0.0); // สีเหลือง
+    vec3 color = (base * diffuse) + vec3(specular);
+
+    gl_FragColor = vec4(color, 1.0);
+  }
+`;
+
+const cellMat = new THREE.ShaderMaterial({ vertexShader: vert, fragmentShader: frag, uniforms });
+const cellGeo = new THREE.TorusBufferGeometry(0.7, 0.2, 16, 32);
+const cellMesh = new THREE.Mesh(cellGeo, cellMat);
+cellMesh.position.set(-targetDistance, 1, targetDistance);
+cellMesh.name = "Torus Cell Shader";
+scene.add(cellMesh);
+pickableObjects.push(cellMesh);
+
+// === Camera Presets ===
+const LERP = 0.08;
+const targetCamPos = new THREE.Vector3().copy(camera.position);
+const targetCtrlTarget = new THREE.Vector3().copy(controls.target);
+
+const presets = {
+  "About Me": [new THREE.Vector3(-targetDistance + 0.5, 0.8, -targetDistance + 4.0), new THREE.Vector3(-targetDistance, 0.2, -targetDistance)],
+  "skill": [new THREE.Vector3(targetDistance + 3, 1.5, -targetDistance + 5), new THREE.Vector3(targetDistance, 1, -targetDistance)],
+  "Project": [new THREE.Vector3(-targetDistance + 3, 1.5, targetDistance + 5), new THREE.Vector3(-targetDistance, 1, targetDistance)],
+  "Contact": [new THREE.Vector3(targetDistance + 1.0, 1.0, targetDistance + 2.0), new THREE.Vector3(targetDistance, 0.5, targetDistance)],
+  "Torus Cell Shader": [new THREE.Vector3(-targetDistance + 3, 1.5, targetDistance + 5), new THREE.Vector3(-targetDistance, 1, targetDistance)]
+};
+
+function setCamTarget(name) {
+  if (presets[name]) {
+    targetCamPos.copy(presets[name][0]);
+    targetCtrlTarget.copy(presets[name][1]);
+  }
+}
+
+// === Interaction ===
+window.addEventListener('click', (event) => {
+  const mouse = new THREE.Vector2(
+    (event.clientX / window.innerWidth) * 2 - 1,
+    -(event.clientY / window.innerHeight) * 2 + 1
+  );
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(pickableObjects, true);
+  if (intersects.length > 0) {
+    const obj = intersects[0].object;
+    selectedObject = obj;
+    labelDiv.innerText = obj.name;
+    setCamTarget(obj.name);
+  }
+});
+
+document.getElementById('navbar').addEventListener('click', (event) => {
+  const map = { "1":"About Me", "2":"skill", "3":"Project", "4":"Contact" };
+  const name = map[event.target.dataset.target];
+  if (name) {
+    setCamTarget(name);
+    labelDiv.innerText = name;
+  }
+});
+
+// === Loop ===
 const clock = new THREE.Clock();
 (function loop() {
-    const delta = clock.getDelta();
-    if (mixerSkill) mixerSkill.update(delta); // อัปเดต Animation Hulk
+  const delta = clock.getDelta();
+  const t = clock.getElapsedTime();
+  if (mixerSkill) mixerSkill.update(delta);
 
-    const t = clock.getElapsedTime();
-    if (selectedObject && selectedObject.material) {
-        selectedObject.material.emissiveIntensity = 0.5 + 0.5 * Math.sin(t * 3);
-    }
+  uniforms.uTime.value = t;
+  uniforms.uLightDir.value.set(
+    Math.sin(t * 0.7) * 2.0,
+    Math.cos(t),
+    Math.sin(t * 0.7)
+  ).normalize();
 
-    camera.position.lerp(targetCameraPosition, LERP_FACTOR);
-    controls.target.lerp(targetControlsTarget, LERP_FACTOR);
-    controls.update();
-    renderer.render(scene, camera);
-    requestAnimationFrame(loop);
+  // หมุน torus
+  cellMesh.rotation.y += 0.01;
+  cellMesh.rotation.x += 0.005;
+
+  camera.position.lerp(targetCamPos, LERP);
+  controls.target.lerp(targetCtrlTarget, LERP);
+  controls.update();
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
 })();
 
 addEventListener('resize', () => {
-    camera.aspect = innerWidth / innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
 });
 
 // เริ่มที่ About Me
-setCameraTargetByName("About Me");
+setCamTarget("About Me");
 labelDiv.innerText = "About Me";
 </script>
-
 </body>
 </html>
+    
